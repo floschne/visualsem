@@ -49,15 +49,15 @@ def load_visualsem_bnids(visualsem_nodes_path, visualsem_images_path=None):
             bn_to_ims[bid].append( get_full_img_name(im) )
 
     # sort entries by BabelNet ID
-    full_bnids_to_ims = [(bid,ims) for bid,ims in sorted(bn_to_ims.items(), key = lambda kv: kv[0])]
+    full_bnids_to_ims = {bid: ims for bid, ims in sorted(bn_to_ims.items(), key = lambda kv: kv[0])}
     print("Total number of BabelNet IDs in VisualSem: %i.\nTotal number of image-node associations: %i.\nMaximum number of images linked to a node: %i."%(
         len(full_bnids_to_ims),
-        sum([len(v) for (k,v) in full_bnids_to_ims]),
-        max([len(v) for (k,v) in full_bnids_to_ims])
+        sum([len(v) for (k,v) in full_bnids_to_ims.items()]),
+        max([len(v) for (k,v) in full_bnids_to_ims.items()])
     ))
     #print("First 5 BabelNet IDs: ", [bnid for (bnid,ims) in full_bnids_to_ims[:5]], "...")
 
-    return [bnids for bnids,_ in full_bnids_to_ims]
+    return full_bnids_to_ims
 
 
 def test_queries(emb_sentences, all_sentences, model):

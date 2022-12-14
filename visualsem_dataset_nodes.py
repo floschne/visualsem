@@ -24,9 +24,12 @@ class VisualSemNodesDataset(torch.utils.data.Dataset):
         assert(os.path.isfile( path_to_nodes )), "File not found: %s"%path_to_nodes
         assert(os.path.isfile( path_to_tuples )), "File not found: %s"%path_to_tuples
         assert(os.path.isfile( path_to_glosses )), "File not found: %s"%path_to_glosses
-        assert( path_to_images is None or os.path.isfile( path_to_images )), "File not found: %s"%path_to_images
+        assert( path_to_images is None or os.path.isdir( path_to_images )), "File not found: %s"%path_to_images
 
-        bnids = load_visualsem_bnids(path_to_nodes, path_to_images)
+
+        full_bnids_to_ims = load_visualsem_bnids(path_to_nodes, path_to_images)
+        self.full_bnids_to_ims = full_bnids_to_ims
+        self.bnids = list(full_bnids_to_ims.keys())
 
         self.nodes = {}
         with open(path_to_nodes, 'r') as fh:
@@ -59,14 +62,18 @@ class VisualSemNodesDataset(torch.utils.data.Dataset):
                 assert(len(gloss_entry)==1)
                 key = list(gloss_entry.keys())[0]
                 self.nodes[ key ][ "glosses" ] = gloss_entry[key]
-        
-        self.bnids = bnids
 
     def __getitem__(self, index):
-        return self.nodes[ self.bnids[index] ]
+        return self.nodes[self.bnids[index]]
+    
+    def get_node_by_bnid(self, bnid):
+        return self.nodes[bnid]
+    
+    def get_node_images_by_bnid(self, bnid):
+        return self.full_bnids_to_ims[bnid]
 
     def __len__(self):
-        return len(self.bnids)
+        return len(self.full_bnids_to_ims)
 
 
 if __name__=="__main__":
