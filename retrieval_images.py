@@ -331,7 +331,7 @@ if __name__=="__main__":
     p.add_argument('--one_gloss_per_node', action='store_true',
             help="""When running retrieval, wether to represent each node in the index with a single english gloss,
             or with all available glosses for the node.""")
-    p.add_argument('--split_name', type=str, choices=['valid', 'test'], nargs="+", default=['valid', 'test'],
+    p.add_argument('--split_names', type=str, choices=['valid', 'test'], nargs="+", default=['valid', 'test'],
             help="""Image splits to perform retrieval for.""")
     args = p.parse_args()
 
