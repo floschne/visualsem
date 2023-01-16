@@ -1,10 +1,7 @@
-import sys
-import os
 import json
+import os
 from collections import defaultdict
-import tqdm
 from itertools import zip_longest
-import torch
 
 
 def grouper(n, iterable, fillvalue=None):
@@ -32,36 +29,38 @@ def load_bnids(fname):
 
 
 def load_visualsem_bnids(visualsem_nodes_path, visualsem_images_path=None):
-    x = json.load(open( visualsem_nodes_path, 'r' ))
+    x = json.load(open(visualsem_nodes_path, 'r'))
     ims = []
     bn_to_ims = defaultdict(list)
 
     def get_full_img_name(im):
         """ Closure to give full path to image given image name. """
         if not visualsem_images_path is None:
-            fname = os.path.join(visualsem_images_path, im[:2], im+".jpg")
+            fname = os.path.join(visualsem_images_path, im[:2], im + ".jpg")
         else:
-            fname = os.path.join(im[:2], im+".jpg")
-        return fname 
+            fname = os.path.join(im[:2], im + ".jpg")
+        return fname
 
     for bid, v in x.items():
         for im in v['ims']:
-            bn_to_ims[bid].append( get_full_img_name(im) )
+            bn_to_ims[bid].append(get_full_img_name(im))
 
     # sort entries by BabelNet ID
-    full_bnids_to_ims = {bid: ims for bid, ims in sorted(bn_to_ims.items(), key = lambda kv: kv[0])}
-    print("Total number of BabelNet IDs in VisualSem: %i.\nTotal number of image-node associations: %i.\nMaximum number of images linked to a node: %i."%(
-        len(full_bnids_to_ims),
-        sum([len(v) for (k,v) in full_bnids_to_ims.items()]),
-        max([len(v) for (k,v) in full_bnids_to_ims.items()])
-    ))
-    #print("First 5 BabelNet IDs: ", [bnid for (bnid,ims) in full_bnids_to_ims[:5]], "...")
+    full_bnids_to_ims = {bid: ims for bid, ims in sorted(bn_to_ims.items(), key=lambda kv: kv[0])}
+    print(
+        "Total number of BabelNet IDs in VisualSem: %i.\nTotal number of image-node associations: %i.\nMaximum number of images linked to a node: %i." % (
+            len(full_bnids_to_ims),
+            sum([len(v) for (k, v) in full_bnids_to_ims.items()]),
+            max([len(v) for (k, v) in full_bnids_to_ims.items()])
+        ))
+    # print("First 5 BabelNet IDs: ", [bnid for (bnid,ims) in full_bnids_to_ims[:5]], "...")
 
     return full_bnids_to_ims
 
 
 def test_queries(emb_sentences, all_sentences, model):
-    queries = ["Heater consisting of a self-contained (usually portable) unit to warm a room", 'A tournament-style downhill speed skiing competition.']
+    queries = ["Heater consisting of a self-contained (usually portable) unit to warm a room",
+               'A tournament-style downhill speed skiing competition.']
 
     for query in queries:
         query_embedding = model.encode(query, convert_to_tensor=True)
@@ -76,4 +75,3 @@ def test_queries(emb_sentences, all_sentences, model):
 
         for idx, score in results[0:closest_n]:
             print(all_sentences[idx].strip(), "(Score: %.4f)" % (score))
-
