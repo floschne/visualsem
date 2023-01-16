@@ -54,9 +54,11 @@ class VisualSemNodesDataset(torch.utils.data.Dataset):
         super(VisualSemNodesDataset).__init__()
 
         assert Path(path_to_nodes).exists(), f"File not found: {path_to_nodes}"
-        assert Path(path_to_tuples), f"File not found: {path_to_tuples}"
-        assert Path(path_to_glosses), f"File not found: {path_to_glosses}"
-        assert path_to_images is None or Path(path_to_images), f"File not found: {path_to_images}"
+        assert Path(path_to_tuples).exists(), f"File not found: {path_to_tuples}"
+        assert Path(path_to_glosses).exists(), f"File not found: {path_to_glosses}"
+        assert path_to_images is None or Path(path_to_images).exists(), f"File not found: {path_to_images}"
+
+        self.root_path = Path(path_to_nodes).parent
 
         full_bnids_to_ims = load_visualsem_bnids(path_to_nodes, path_to_images)
         self.full_bnids_to_ims = full_bnids_to_ims
