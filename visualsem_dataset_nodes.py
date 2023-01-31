@@ -97,10 +97,14 @@ class VisualSemNodesDataset(torch.utils.data.Dataset):
                 self.nodes[key]["glosses"] = gloss_entry[key]
 
     def __getitem__(self, index):
-        return self.nodes[self.bnids[index]]
+        node = dict(self.nodes[self.bnids[index]])
+        node.update({'bnid': self.bnids[index]})
+        return node
 
     def get_node_by_bnid(self, bnid):
-        return self.nodes[bnid]
+        node = dict(self.nodes[bnid])
+        node.update({'bnid': bnid})
+        return node
 
     def get_node_images_by_bnid(self, bnid):
         return self.full_bnids_to_ims[bnid]
